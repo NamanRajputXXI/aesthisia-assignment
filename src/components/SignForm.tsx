@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import React, { useState, useCallback, ChangeEvent, FormEvent } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import petals from "../assets/images/petals.png";
 
@@ -12,36 +12,24 @@ const SignForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [signedIn, setSignedIn] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-  };
+  }, []);
 
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
+  const handlePasswordChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+    },
+    []
+  );
 
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const handleTogglePassword = useCallback(() => {
+    setShowPassword((prevState) => !prevState);
+  }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      console.log("Sign in successful");
-      setSignedIn(true);
-      setEmail("");
-      setPassword("");
-      setShowSuccessMessage(true);
-    }
-  };
-
-  const validateForm = (): FormErrors => {
+  const validateForm = useCallback((): FormErrors => {
     const validationErrors: FormErrors = {};
 
     if (!email) {
@@ -56,19 +44,26 @@ const SignForm: React.FC = () => {
     }
 
     return validationErrors;
-  };
+  }, [email, password]);
+  const handleSubmit = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const validationErrors = validateForm();
+      setErrors(validationErrors);
 
-  useEffect(() => {
-    if (showSuccessMessage) {
-      const timeout = setTimeout(() => {
-        setShowSuccessMessage(false);
-      }, 3000);
+      if (Object.keys(validationErrors).length === 0) {
+        console.log("Sign in successful");
+        setEmail("");
+        setPassword("");
+        setShowSuccessMessage(true);
 
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [showSuccessMessage]);
+        setTimeout(() => {
+          setShowSuccessMessage(false);
+        }, 3000);
+      }
+    },
+    [validateForm]
+  );
 
   return (
     <>
@@ -95,7 +90,7 @@ const SignForm: React.FC = () => {
               placeholder="Enter your email"
             />
             {errors.email && (
-              <span className="text-red-500 ">{errors.email}</span>
+              <span className="text-red-500">{errors.email}</span>
             )}
           </div>
           <div className="relative mb-4">
@@ -155,4 +150,4 @@ const SignForm: React.FC = () => {
   );
 };
 
-export default SignForm;
+export default React.memo(SignForm);
