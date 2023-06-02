@@ -7,8 +7,12 @@ import exo from "../assets/images/exo.png";
 const SignInCard: React.FC = () => {
   return (
     <>
-      <img src={image} alt="image" className="relative h-[94vh] w-[45vw]" />
-      <div className="absolute flex flex-col justify-between w-[42vw] font-Poppins h-[86vh] text-white transform top-12 left-10">
+      <img
+        src={image}
+        alt="image"
+        className="relative h-[94vh] w-[45vw] md:flex hidden"
+      />
+      <div className="absolute md:flex hidden flex-col justify-between w-[42vw] font-Poppins h-[86vh] text-white transform top-12 left-10">
         <img src={exo} alt="exo" className="w-12 h-5" />
         <div className="mt-4 letter tracking-[0.3em]">
           <h1 className="font-[600] text-4xl">100% Uptime😎</h1>
