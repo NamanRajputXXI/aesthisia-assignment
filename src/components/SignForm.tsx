@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import petals from "../assets/images/petals.png";
 
@@ -7,11 +7,13 @@ interface FormErrors {
   password?: string;
 }
 
-const SignForm = () => {
+const SignForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [signedIn, setSignedIn] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -31,8 +33,11 @@ const SignForm = () => {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      // Perform sign-in logic here
       console.log("Sign in successful");
+      setSignedIn(true);
+      setEmail("");
+      setPassword("");
+      setShowSuccessMessage(true);
     }
   };
 
@@ -45,10 +50,25 @@ const SignForm = () => {
 
     if (!password) {
       validationErrors.password = "Password is required";
+    } else if (password.length < 8) {
+      validationErrors.password =
+        "Password should be at least 8 characters long";
     }
 
     return validationErrors;
   };
+
+  useEffect(() => {
+    if (showSuccessMessage) {
+      const timeout = setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [showSuccessMessage]);
 
   return (
     <>
@@ -69,20 +89,20 @@ const SignForm = () => {
             <input
               type="email"
               id="email"
-              className="w-[360px] flex items-center h-12 text-sm px-5 border-[#464660]   border rounded-[10px]"
+              className="lg:w-[360px] w-[280px] flex items-center h-12 text-sm px-5 border-[#464660]   border rounded-[10px]"
               value={email}
               onChange={handleEmailChange}
               placeholder="Enter your email"
             />
             {errors.email && (
-              <span className="text-red-500">{errors.email}</span>
+              <span className="text-red-500 ">{errors.email}</span>
             )}
           </div>
           <div className="relative mb-4">
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-[360px] flex items-center h-12 text-sm px-5 border-[#464660]   border rounded-[10px]"
+              className="lg:w-[360px] w-[280px] flex items-center h-12 text-sm px-5 border-[#464660]   border rounded-[10px]"
               value={password}
               onChange={handlePasswordChange}
               placeholder="Enter your password"
@@ -92,10 +112,16 @@ const SignForm = () => {
               className="absolute transform -translate-y-1/2 top-1/2 right-3 focus:outline-none"
               onClick={handleTogglePassword}
             >
-              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showPassword ? (
+                <FiEyeOff size={16} opacity={0.5} />
+              ) : (
+                <FiEye size={16} opacity={0.5} />
+              )}
             </button>
             {errors.password && (
-              <span className="text-red-500">{errors.password}</span>
+              <span className=" text-[10px] text-red-500">
+                {errors.password}
+              </span>
             )}
           </div>
           <a
@@ -106,10 +132,15 @@ const SignForm = () => {
           </a>
           <button
             type="submit"
-            className="text-[18px] my-10 font-[600] text-white w-[360px] h-[50px] shadow-md bg-[#020100] rounded-[10px]"
+            className="text-[18px] my-10 font-[600] text-white lg:w-[360px] w-[280px] h-[50px] shadow-md bg-[#020100] rounded-[10px]"
           >
             Login
           </button>
+          {showSuccessMessage && (
+            <div className="fixed top-0 left-0 w-full py-2 text-center text-white bg-[#08A593]">
+              Signed in successfully!
+            </div>
+          )}
           <span className="my-4 text-sm text-center ">
             <p className="text-[#667085]">
               Don't have an account yet?{" "}
