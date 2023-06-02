@@ -67,7 +67,7 @@ const SignForm: React.FC = () => {
 
   return (
     <>
-      <div className="w-[40vw] font-Inter gap-8 flex  flex-col items-center mr-2">
+      <div className="md:w-[40vw] font-Inter gap-8 flex md:justify-normal justify-center  flex-col items-center ">
         <div className="flex flex-col items-center gap-2">
           <img src={petals} alt="petals" className="h-[50px]" />
           <div className="font-[500] text-[34px] leading-[40px]">
